@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JWT Token Decoder</title>
+  <style>
+    body { font-family: monospace; padding: 2em; }
+    pre { background: #f4f4f4; padding: 1em; border-radius: 5px; overflow-x: auto; }
+  </style>
+  <script>
+    function decodeJWT(token) {
+      try {
+        const [header, payload] = token.split('.');
+        const decodedHeader = JSON.parse(atob(header));
+        const decodedPayload = JSON.parse(atob(payload));
+        document.getElementById('header').textContent = JSON.stringify(decodedHeader, null, 2);
+        document.getElementById('payload').textContent = JSON.stringify(decodedPayload, null, 2);
+      } catch (err) {
+        document.getElementById('error').textContent = 'Error decoding token';
+      }
+    }
+
+    window.onload = function () {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const token = params.get('id_token') || params.get('access_token');
+
+      if (token) {
+        document.getElementById('raw').textContent = token;
+        decodeJWT(token);
+      } else {
+        document.getElementById('error').textContent = 'No token found in URL';
+      }
+    };
+  </script>
+</head>
+<body>
+  <h1>JWT Token Decoder</h1>
+  <div id="error" style="color: red;"></div>
+  <p><strong>Raw Token:</strong></p>
+  <pre id="raw"></pre>
+  <p><strong>Decoded Header:</strong></p>
+  <pre id="header"></pre>
+  <p><strong>Decoded Payload:</strong></p>
+  <pre id="payload"></pre>
+</body>
+</html>
